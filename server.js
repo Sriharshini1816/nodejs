@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { connectMongo, pgPool } = require('./config/db');
+const { connectMongo, pgPool } = require('./db');
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
@@ -45,3 +45,4 @@ app.post('/api/analytics/event', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
+
