@@ -1,7 +1,7 @@
 // routes/resources.js
 const express = require('express');
 const router = express.Router();
-const Resource = require('../models/Resource');
+const Resource = require('../Resource');
 
 // list resources
 router.get('/', async (req, res) => {
@@ -27,3 +27,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
