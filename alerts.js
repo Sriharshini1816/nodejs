@@ -1,7 +1,7 @@
 // routes/alerts.js
 const express = require('express');
 const router = express.Router();
-const Alert = require('../models/Alert');
+const Alert = require('../Alert');
 
 // list by user
 router.get('/user/:userId', async (req, res) => {
@@ -17,3 +17,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
