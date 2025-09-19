@@ -25,7 +25,14 @@ router.post('/', async (req, res) => {
     res.status(500).json({ msg: 'server error' });
   }
 });
-
+// simple static resources
+router.get("/", (req, res) => {
+  res.json([
+    { id: 1, title: "Resume Template", type: "download" },
+    { id: 2, title: "Scholarship Guide", type: "article" }
+  ]);
+});
 module.exports = router;
+
 
 
