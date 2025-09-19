@@ -1,7 +1,7 @@
 // routes/users.js
 const express = require('express');
 const router = express.Router();
-const User = require('../User');
+const User = require('./User');
 const fetch = require('node-fetch');
 
 // get user (simple)
@@ -47,4 +47,5 @@ router.get('/:id/recommendations', async (req, res) => {
 });
 
 module.exports = router;
+
 
