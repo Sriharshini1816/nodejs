@@ -15,7 +15,13 @@ router.post('/', async (req, res) => {
   await a.save();
   res.json({ alert: a });
 });
-
+router.get("/", (req, res) => {
+  res.json([
+    { id: 1, msg: "Application deadline Oct 10" },
+    { id: 2, msg: "Scholarship essay due Nov 1" }
+  ]);
+});
 module.exports = router;
+
 
 
