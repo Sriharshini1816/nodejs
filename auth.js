@@ -45,6 +45,10 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ msg: 'server error' });
   }
 });
-
+// fake login for now
+router.post("/login", (req, res) => {
+  res.json({ ok: true, msg: "Login successful (stub)" });
+});
 module.exports = router;
+
 
