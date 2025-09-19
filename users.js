@@ -1,51 +1,52 @@
-// routes/users.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('./User');
-const fetch = require('node-fetch');
+const mongoose = require("mongoose");
 
-// get user (simple)
-router.get('/:id', async (req, res) => {
+// ✅ inline schema (no /models folder)
+const ProfileSchema = new mongoose.Schema({
+  education: String,
+  interests: [String],
+  careerGoals: [String],
+  skills: [String],
+  progress: { type: Number, default: 0 }
+});
+
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  passwordHash: String,
+  provider: { type: String, default: "local" },
+  providerId: String,
+  profile: ProfileSchema,
+  saved: {
+    careers: [String],
+    courses: [String],
+    universities: [String]
+  },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+
+// ➕ Create user
+router.post("/", async (req, res) => {
   try {
-    const u = await User.findById(req.params.id).select('-passwordHash');
-    if (!u) return res.status(404).json({ msg: 'User not found' });
-    res.json({ user: u });
+    const newUser = new User(req.body);
+    await newUser.save();
+    res.status(201).json(newUser);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'server error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// update profile
-router.put('/:id/profile', async (req, res) => {
+// 📋 Get all
+router.get("/", async (req, res) => {
   try {
-    const update = req.body;
-    const u = await User.findByIdAndUpdate(req.params.id, { $set: { profile: update } }, { new: true }).select('-passwordHash');
-    res.json({ user: u });
+    const users = await User.find();
+    res.json(users);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'server error' });
-  }
-});
-
-// proxy to recommender microservice
-router.get('/:id/recommendations', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    // call recommender service
-    const resp = await fetch(`${process.env.RECOMMENDER_URL}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile: user.profile, userId: user._id })
-    });
-    const json = await resp.json();
-    res.json(json);
-  } catch (err) {
-    console.error('recommendation error', err);
-    res.status(500).json({ ok: false, err: 'recommendation service error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
 module.exports = router;
-
-
