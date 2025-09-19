@@ -3,12 +3,15 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+// db file is in root
 const { connectMongo, pgPool } = require('./db');
 
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const resourceRoutes = require('./routes/resources');
-const alertRoutes = require('./routes/alerts');
+// route files are in root
+const authRoutes = require('./auth');
+const userRoutes = require('./users');
+const resourceRoutes = require('./resources');
+const alertRoutes = require('./alerts');
 
 const app = express();
 app.use(cors());
@@ -45,4 +48,3 @@ app.post('/api/analytics/event', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
-
