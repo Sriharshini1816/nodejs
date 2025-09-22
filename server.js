@@ -1,39 +1,76 @@
-// server.js
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose'); // ✅ add mongoose
-
-const authRoutes = require('./auth');
-const userRoutes = require('./users');
-const resourceRoutes = require('./resources');
-const alertRoutes = require('./alerts');
+// backend/server.js
+const express = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 5000;
-
-// ✅ Connect MongoDB
-mongoose.connect(process.env.MONGO_URI, {
+// 1. Connect to MongoDB
+mongoose.connect("mongodb://localhost:27017/myapp", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log("✅ MongoDB connected"))
-.catch(err => console.error("❌ MongoDB connection error:", err));
-
-// health check
-app.get('/', (req, res) => res.json({ ok: true, msg: 'Career Advisor API running' }));
-
-// routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/resources', resourceRoutes);
-app.use('/api/alerts', alertRoutes);
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server listening on ${PORT}`);
+  useUnifiedTopology: true,
 });
 
+// 2. Define User Schema
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+});
+
+const User = mongoose.model("User", userSchema);
+
+// 3. Signup API
+app.post("/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save user
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
+
+    res.json({ message: "Account created successfully!" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Run server
+app.listen(5000, () => {
+  console.log("✅ Server running on http://localhost:5000");
+});
+// 4. Login API
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    res.json({ message: "Login successful", user: { name: user.name, email: user.email } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
