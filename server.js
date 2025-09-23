@@ -71,6 +71,11 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// ✅ Health check route
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running!");
+});
+
 // ✅ Run server with Render port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
