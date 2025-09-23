@@ -6,7 +6,12 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://68d2ae26400a18082cc049ae--marvelous-scone-34095a.netlify.app/"
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 app.use(bodyParser.json());
 
 // ✅ 1. Connect to MongoDB (from .env)
@@ -81,3 +86,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
+
