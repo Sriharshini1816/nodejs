@@ -7,7 +7,7 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors({
-  origin: "https://68d2ae26400a18082cc049ae--marvelous-scone-34095a.netlify.app/"
+  origin: "https://68d2ae26400a18082cc049ae--marvelous-scone-34095a.netlify.app/",
   methods: ["GET", "POST"],
   credentials: true
 }));
@@ -86,4 +86,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
+
 
